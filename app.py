@@ -2,7 +2,7 @@ import streamlit as st
 import ia
 
 st.title("KhanesIA - Automation Center")
-st.page_config(
+st.set_page_config(
     page_title="KhanesIA",
     page_icon="✨"
 )
