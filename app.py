@@ -16,4 +16,5 @@ if prompt:
     st.chat_message("user").write(prompt)
 
     resposta = ia.responder(st.session_state.mensagens)
-    st.session_state.mensagens.append({"role": "assistant", "content": "KhanesIA: " + resposta})
+    st.session_state.mensagens.append({"role": "assistant", "content": resposta})
+    st.chat_message("assistant").write(resposta)

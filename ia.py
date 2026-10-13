@@ -1,7 +1,10 @@
+import streamlit as st
 from openai import OpenAI
 
-API_KEY = st.secrets["OPENROUTER_API_KEY"]
-base_orl = "https://openrouter.ai/api/v1"
+client = OpenAI(
+    base_url = "https://openrouter.ai/api/v1",
+    API_KEY = st.secrets["OPENROUTER_API_KEY"]
+)
 
 def responder(mensagens):
     resposta = client.chat.completions.create(
