@@ -1,7 +1,7 @@
 import streamlit as st
 from openai import OpenAI
 
-@st.cache_rescource
+@st.cache_resource
 def get_client():
     return OpenAI(
         base_url="https://openrouter.ai/api/v1",
