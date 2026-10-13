@@ -15,6 +15,7 @@ if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
-    resposta = ia.responder(st.session_state.mensagens)
-    st.session_state.mensagens.append({"role": "assistant", "content": resposta})
+    with st.spinner("Pensando..."):
+        resposta = ia.responder(st.session_state.mensagens)
+        st.session_state.mensagens.append({"role": "assistant", "content": resposta})
     st.chat_message("assistant").write(resposta)
