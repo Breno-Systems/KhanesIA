@@ -1,4 +1,5 @@
 import streamlit as st
+import ia
 
 st.title("KhanesIA - Automation Center")
 
@@ -8,10 +9,11 @@ if "mensagens" not in st.session_state:
 for msg in st.session_state.mensagens:
     st.chat_message(msg["role"]).write(msg["content"])
 
-prompt = st.chat_input("Figite algo...")
+prompt = st.chat_input("Digite algo...")
 
 if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
-    st.session_state.mensagens.append({"role": "assistant", "content": "echo: " + prompt})
     st.chat_message("user").write(prompt)
-    st.chat_message("assistant").write("echo: " + prompt)
+
+    resposta = ia.responder(st.session_state.mensagens)
+    st.session_state.mensagens.append({"role": "assistant", "content": "KhanesIA: " + resposta})
