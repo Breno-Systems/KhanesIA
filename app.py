@@ -2,6 +2,10 @@ import streamlit as st
 import ia
 
 st.title("KhanesIA - Automation Center")
+st.page_config(
+    page_title="KhanesIA",
+    page_icon="✨"
+)
 
 if "mensagens" not in st.session_state:
     st.session_state.mensagens = []
@@ -16,6 +20,6 @@ if prompt:
     st.chat_message("user").write(prompt)
 
     with st.spinner("Pensando..."):
-        resposta = ia.responder(st.session_state.mensagens)
+        resposta = ia.responder_stream(st.session_state.mensagens)
         st.session_state.mensagens.append({"role": "assistant", "content": resposta})
-    st.chat_message("assistant").write(resposta)
+    st.chat_message("assistant").write(resposta) 
