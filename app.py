@@ -13,3 +13,4 @@ prompt = st.chat_input()
 if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
+    st.chat_message("assistant").write("echo: " + prompt)
