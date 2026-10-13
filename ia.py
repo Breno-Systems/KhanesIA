@@ -3,7 +3,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url = "https://openrouter.ai/api/v1",
-    API_KEY = st.secrets["OPENROUTER_API_KEY"]
+    API_KEY = st.secrets["OPENROUTER_API_KEY"],
 )
 
 def responder(mensagens):
