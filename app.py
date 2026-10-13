@@ -10,5 +10,5 @@ for msg in st.session_state.mensagens:
 
 prompt = st.chat_input()
 
-if st.button("Enviar") and prompt:
+if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
