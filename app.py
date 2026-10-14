@@ -1,14 +1,35 @@
 import streamlit as st
 import ia
+import uuid
+from supabase import create_client
 
-st.title("KhanesIA - Automation Center")
 st.set_page_config(
     page_title="KhanesIA",
     page_icon="✨"
 )
+st.title("KhanesIA - Automation Center")
+
+@st.cache_resource
+def get_supabase():
+    url = st.secrets["SUPABASE_URL"]
+    key = st.secrets["SUPABASE_KEY"]
+    return create_client(url, key)
+
+supabase = get_supabase()
+
+if "session_id" not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
 
 if "mensagens" not in st.session_state:
-    st.session_state.mensagens = []
+    resp = (
+        supabase.table("chats")
+        .select("role, content")
+        .eq("session_id", st.session_state.session_id)
+        .order("created_at")
+        .execute()
+    )
+
+    st.session_state.mensagens = resp.data if resp.data or [] else []
 
 for msg in st.session_state.mensagens:
     st.chat_message(msg["role"]).write(msg["content"])
@@ -19,7 +40,27 @@ if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
-    with st.spinner("Pensando..."):
-        resposta = ia.responder_stream(st.session_state.mensagens)
-        st.session_state.mensagens.append({"role": "assistant", "content": resposta})
-    st.chat_message("assistant").write(resposta) 
+    supabase.table("chats").insert({
+    "session_id": st.session_state.session_id,
+    "role": "user",
+    "content": prompt
+    }).execute()
+
+    try:         
+        with st.chat_message("assistant"):
+            resposta_completa = st.write_stream(ia.responder_stream(st.session_state.mensagens))
+        st.session_state.mensagens.append({"role": "assistant", "content": resposta_completa})
+
+        supabase.table("chats").insert({
+            "session_id": st.session_state.session_id,
+            "role": "assistant",
+            "content": resposta_completa
+        }).execute()
+    
+    except RuntimeError as e:
+        st.error(f"**Problema ao gerar a resposta, tente novamente.\n {e}**")
+        st.session_state.mensagens.pop()
+    
+    except Exception as e:
+        st.error(f"⚠️ **Erro inesperado:** {e}")
+        st.session_state.mensagens.pop()

@@ -15,8 +15,21 @@ def get_client():
 client = get_client()
 
 def responder_stream(mensagens):
-    resposta = client.chat.completions.create(
-        model = "nvidia/nemotron-3-ultra-550b-a55b:free",
-        messages = mensagens
-    )
-    return resposta.choices[0].message.content
+    try:
+        stream = client.chat.completions.create(model = "nvidia/nemotron-3-ultra-550b-a55b:free",
+            messages = mensagens,
+            stream=True
+        )
+
+        for chunk in stream:
+            if not chunk.choices:
+                continue
+
+            delta = chunk.choices[0].delta
+            conteudo = getattr(delta, "content", None)
+
+            if conteudo:
+                yield conteudo
+
+    except Exception as e:
+        raise RuntimeError(f"Erro na API/Streaming: {e}") from e
