@@ -15,7 +15,7 @@ def get_supabase():
     key = st.secrets["SUPABASE_KEY"]
     return create_client(url, key)
 
-supabase = get_supabase
+supabase = get_supabase()
 
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
