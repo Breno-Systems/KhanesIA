@@ -47,19 +47,20 @@ if prompt:
     }).execute()
 
     try:         
-        with st.spinner("Pensando..."): resposta = ia.responder_stream(st.session_state.mensagens)
-        st.session_state.mensagens.append({"role": "assistant", "content": resposta})
+        with st.chat-message("assistant"):
+            resposta_completa = st.write_stream(ia.responder_stream(st.session_state.mensagens))
+        st.session_state.mensagens.append({"role": "assistant", "content": resposta_completa})
         st.chat_message("assistant").write(resposta)
 
         supabase.table("chats").insert({
             "session_id": st.session_state.session_id,
             "role": "assistant",
-            "content": resposta
+            "content": resposta_completa
         }).execute()
     
     except RuntimeError as e:
-        st.chat_message("assistant").write(f"Problema ao gerar a resposta, tente novamente.\n {e}")
+        st.chat_message("assistant").write(f"**Problema ao gerar a resposta, tente novamente.\n {e}**")
     
     except Exception as e:
-        st.error(f"⚠️ Erro inesperado: {e}")
-        st.session_state
+        st.error(f"⚠️ **Erro inesperado:** {e}")
+        st.session_state.mensagens.pop()

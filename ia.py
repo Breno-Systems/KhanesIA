@@ -15,17 +15,30 @@ def get_client():
 client = get_client()
 
 def responder_stream(mensagens):
-    resposta = client.chat.completions.create(
-        model = "nvidia/nemotron-3-ultra-550b-a55b:free",
-        messages = mensagens
-    )
+    try:
+        stream = client.chat.completions.create(model = "nvidia/nemotron-3-ultra-550b-a55b:free",
+            messages = mensagens,
+            stream=True
+        )
 
-    if hasattr(resposta, "error") and resposta.error:
-        msg = resposta.error.get("message", "Erro desconhecido da API")
-        code = resposta.error.get("code", "N/A")
-        raise RuntimeError (f"Erro da API ({code}): {msg}")
+        for chunk in stream:
+            if not chunk.choices:
+                continue
 
-    if not resposta.choices:
-        raise RuntimeError("Resposta da API vazia: 'choices' não encontrado ou nulo") 
+            delta = chunk.choices[0].delta
+            conteudo = getattr(delta, "content", None)
 
-    return resposta.choices[0].message.content
+            if conteudo:
+                yield conteudo
+
+        if hasattr(conteudo, "error") and conteudo.error:
+            msg = conteudo.error.get("message", "Erro desconhecido da API")
+            code = conteudo.error.get("code", "N/A")
+            raise RuntimeError (f"Erro da API ({code}): {msg}")
+
+        if not conteudo.choices:
+            raise RuntimeError("Resposta da API vazia: 'choices' não encontrado ou nulo") 
+
+        return stream.choices[0].message.content
+    
+    except Exception as e: raise RuntimeError(f"Erro de conexão com a API: {e}")
