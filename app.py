@@ -26,10 +26,10 @@ if "mensagens" not in st.session_state:
         .select("role, content")
         .eq("session_id", st.session_state.session_id)
         .order("created_at")
-        .execute
+        .execute()
     )
 
-    st.session_state.mensagens = resp.data if resp.data else []
+    st.session_state.mensagens = resp.data if resp.data or [] else []
 
 for msg in st.session_state.mensagens:
     st.chat_message(msg["role"]).write(msg["content"])
