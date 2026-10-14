@@ -58,7 +58,7 @@ if prompt:
         }).execute()
     
     except RuntimeError as e:
-        st.chat_message("assistant").write(f"**Problema ao gerar a resposta, tente novamente.\n {e}**")
+        st.error(f"**Problema ao gerar a resposta, tente novamente.\n {e}**")
         st.session_state.mensagens.pop()
     
     except Exception as e:
