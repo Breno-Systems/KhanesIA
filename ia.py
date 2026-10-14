@@ -20,9 +20,12 @@ def responder_stream(mensagens):
         messages = mensagens
     )
 
-        # --- DIAGNÓSTICO ---
-    print("=== RESPOSTA BRUTA DA API ===")
-    print(resposta)          # Mostra o objeto todo no terminal/logs do Streamlit Cloud
-    print("=============================")
-    
+    if hasattr(resposta, "error") and resposta.error:
+        msg = resposta.error.get("message", "Erro desconhecido da API")
+        code = resposta.error.get("code", "N/A")
+        raise RuntimeError (f"Erro da API ({code}): {msg}")
+
+    if not resposta.choices:
+        raise RuntimeError("Resposta da API vazia: 'choices' não encontrado ou nulo") 
+
     return resposta.choices[0].message.content
