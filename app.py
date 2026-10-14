@@ -47,7 +47,7 @@ if prompt:
     }).execute()
 
     try:         
-        with st.chat-message("assistant"):
+        with st.chat_message("assistant"):
             resposta_completa = st.write_stream(ia.responder_stream(st.session_state.mensagens))
         st.session_state.mensagens.append({"role": "assistant", "content": resposta_completa})
         st.chat_message("assistant").write(resposta)
