@@ -19,4 +19,10 @@ def responder_stream(mensagens):
         model = "nvidia/nemotron-3-ultra-550b-a55b:free",
         messages = mensagens
     )
+
+        # --- DIAGNÓSTICO ---
+    print("=== RESPOSTA BRUTA DA API ===")
+    print(resposta)          # Mostra o objeto todo no terminal/logs do Streamlit Cloud
+    print("=============================")
+    
     return resposta.choices[0].message.content
