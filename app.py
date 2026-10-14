@@ -29,7 +29,7 @@ if "mensagens" not in st.session_state:
         .execute
     )
 
-    st.session_state.mensagens = resp.data if 
+    st.session_state.mensagens = resp.data if resp.data else []
 
 for msg in st.session_state.mensagens:
     st.chat_message(msg["role"]).write(msg["content"])
@@ -40,7 +40,20 @@ if prompt:
     st.session_state.mensagens.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
 
+    supabase.table("chats").insert({
+    "session_id": st.session_state.session_id,
+    "role": "user",
+    "content": prompt
+    }).execute()
+
     with st.spinner("Pensando..."):
         resposta = ia.responder_stream(st.session_state.mensagens)
-        st.session_state.mensagens.append({"role": "assistant", "content": resposta})
-    st.chat_message("assistant").write(resposta) 
+    
+    st.session_state.mensagens.append({"role": "assistant", "content": resposta})
+    st.chat_message("assistant").write(resposta)
+
+    supabase.table("chats").insert({
+        "session_id": st.session_state.session_id,
+        "role": "assistant",
+        "content": resposta
+    }).execute()
