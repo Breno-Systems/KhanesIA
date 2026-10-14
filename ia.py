@@ -31,14 +31,5 @@ def responder_stream(mensagens):
             if conteudo:
                 yield conteudo
 
-        if hasattr(conteudo, "error") and conteudo.error:
-            msg = conteudo.error.get("message", "Erro desconhecido da API")
-            code = conteudo.error.get("code", "N/A")
-            raise RuntimeError (f"Erro da API ({code}): {msg}")
-
-        if not conteudo.choices:
-            raise RuntimeError("Resposta da API vazia: 'choices' não encontrado ou nulo") 
-
-        return stream.choices[0].message.content
-    
-    except Exception as e: raise RuntimeError(f"Erro de conexão com a API: {e}")
+    except Exception as e:
+        raise RuntimeError(f"Erro na API/Streaming: {e}") from e
